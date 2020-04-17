@@ -12,7 +12,7 @@ load_all()
 library(scran)
 data("simData")
 
-cl=clusterMany(simData,k=2:3,clusterFunction="kmeans")@clusterMatrix
+cl=clusterMany(simData,k=2:5,clusterFunction="kmeans")@clusterMatrix
 head(cl)
 g=buildSNNGraph(cl,k=10, BNPARAM = VptreeParam(distance = "Hamming"),transposed=T)
 #RICORDA: scelta di d
@@ -37,3 +37,7 @@ trueCluster
 system.time(makeConsensus(cl,proportion=1))
 
 system.time(makeConsensus2(cl,k=10,algorithm="cluster_walktrap"))
+
+#Quanto cambia se cambio make consensus? Cluster many sembra molto più importante
+#make consensus sceglie il migliore?
+#Sembra scegliere quello con più cluster
