@@ -87,7 +87,10 @@ max_mem_cons2 <- max(rowSums(profile2[,1:3]))*0.00000095367432
 max_mem_cons2
 
 #####Merge Cluster####
-
+cl=clusterMany(simData,k=2:10,clusterFunction="kmeans")
 ce<-makeConsensus(cl, proportion=0.7, minSize=5)
-ce<-makeDendrogram(ce)
+ce<-makeDendrogram(ce,reduceMethod="mad")
 ce<-mergeClusters(ce,mergeMethod="adjP",DEMethod="edgeR",cutoff=0.05,plot=FALSE)
+
+#come gestire?
+#e come gestire makeConsensus2
