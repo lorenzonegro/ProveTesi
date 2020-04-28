@@ -25,8 +25,8 @@ cl=clusterMany(simData,k=2:10,clusterFunction="kmeans")@clusterMatrix #k numero 
 
 library(igraph)
 
-mc1=makeConsensus(cl,proportion=0.7)
-mc2=makeConsensus2(cl,k=10,algorithm="cluster_walktrap") #aggiungere step a makeconsensus2
+mc1=makeConsensus(cl@clusterMatrix,proportion=0.7)
+mc2=makeConsensus2(cl@clusterMatrix,k=10,algorithm="cluster_walktrap") #aggiungere step a makeconsensus2
 
 table(mc1$clustering)
 table(mc2$clustering)
@@ -130,3 +130,7 @@ profile2 <- summaryRprof(filename = "ram_consensus2.txt", chunksize = -1L,
                          memory = "tseries", diff = FALSE)
 max_mem_cons2 <- max(rowSums(profile2[,1:3]))*0.00000095367432
 max_mem_cons2
+dim(simData)
+
+#salvarmi su file i risultati di clusterMany 
+#due script separati x makeConsensus e makeConsensus2 per vedere effettivamente memoria

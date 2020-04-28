@@ -88,9 +88,19 @@ max_mem_cons2
 
 #####Merge Cluster####
 cl=clusterMany(simData,k=2:10,clusterFunction="kmeans")
-ce<-makeConsensus(cl, proportion=0.7, minSize=5)
-ce<-makeDendrogram(ce,reduceMethod="mad")
-ce<-mergeClusters(ce,mergeMethod="adjP",DEMethod="edgeR",cutoff=0.05,plot=FALSE)
-
+ce<-makeConsensus2(cl, k=10, algorithm="cluster_walktrap")
+ce<-makeDendrogram(ce,reduceMethod="mad") #pca al posto di mad
+ce<-mergeClusters(ce,mergeMethod="adjP",DEMethod="limma",cutoff=0.3,plot=FALSE)
+ce
 #come gestire?
 #e come gestire makeConsensus2
+
+#clusterFunction ?
+#guardare indice
+#mc2 abbiamo due algoritmi mc1 ne abbiamo uno vogliamo confrontarli
+
+#lascio stare per ora merge cluster
+#per ogni metodo 3 grafici
+#asse x cambio parametro (k mc2 proprtion mc1)
+#asse y, 4 grafici, system.time (memory fallo successivamente) justrandindex, numero cluster
+#10 vaori per proportion 10 valori per k

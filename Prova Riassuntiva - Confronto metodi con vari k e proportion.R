@@ -1,0 +1,69 @@
+rm(list=ls())
+library(devtools)
+setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/BiocNeighbors")
+load_all()
+setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/clusterExperiment")
+load_all()
+library(scran)
+setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/ProveTesi")
+library(mclust)
+
+#Per usare adjuster rand index devo dire ogni oss a che cluster appartiene
+
+load("simCount_ext.RDAta")
+load("simData_ext.RData")
+load("trueCluster_ext.RData")
+
+####Analisi####
+prop=seq(0,1,by=0.1)
+cl=clusterMany(simData,k=2:15,clusterFunction="kmeans")@clusterMatrix
+nclust1=st1=idx1=rep(NA,length(prop))
+for(i in 1:length(prop))
+{
+  #MC1: makeConsensus classico con proportion da 0 a 1
+  mc1=makeConsensus(cl,proportion=prop[i])
+  nclust[i]=length(table(mc1$clustering))
+  st[i]=system.time(makeConsensus(cl,proportion=0.7))[[3]]
+  idx[i]=adjustedRandIndex(trueCluster,mc1$clustering)
+}
+plot(nclust,type="l")
+plot(st,type="l")
+plot(idx,type="l")
+nclust
+st
+idx
+
+kclust=c(1,3,5,8,10,15,20,50,100,250,500)
+nclust2=st2=idx2=rep(NA,length(kclust))
+for(i in 1:length(kclust))
+{
+  #MC2: makeConsensus nuovo kclust diversi algoritmo walktrap
+  mc2=makeConsensus2(cl, k=kclust[i], algorithm="cluster_walktrap")
+  nclust2[i]=length(table(mc2$clustering))
+  st2[i]=system.time(makeConsensus2(cl, k=kclust[i], algorithm="cluster_walktrap"))[[3]]
+  idx2[i]=adjustedRandIndex(trueCluster,mc2$clustering)
+}
+plot(nclust2,type="l")
+plot(st2,type="l")
+plot(idx2,type="l")
+nclust2
+idx2
+
+
+kclust=c(1,3,5,8,10,15,20,50,100,250,500)
+nclust3=st3=idx3=rep(NA,length(kclust))
+for(i in 1:length(kclust))
+{
+  #MC3: makeConsensus nuovo kclust diversi algoritmo walktrap
+  mc3=makeConsensus2(cl, k=kclust[i], algorithm="cluster_louvain")
+  nclust3[i]=length(table(mc3$clustering))
+  st3[i]=system.time(makeConsensus2(cl, k=kclust[i], algorithm="cluster_walktrap"))[[3]]
+  idx3[i]=adjustedRandIndex(trueCluster,mc3$clustering)
+}
+plot(nclust3,type="l")
+plot(st3,type="l")
+plot(idx3,type="l")
+nclust3
+st3
+idx3
+
