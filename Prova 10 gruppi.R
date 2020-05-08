@@ -1,0 +1,151 @@
+rm(list=ls())
+library(devtools)
+setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/BiocNeighbors")
+load_all()
+setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/clusterExperiment")
+load_all()
+library(scran)
+setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/ProveTesi")
+library(mclust)
+
+#Per usare adjuster rand index devo dire ogni oss a che cluster appartiene
+
+load("simCount_10.RDAta")
+load("simData_10.RData")
+load("trueCluster_10.RData")
+
+####Analisi####
+prop=seq(0,1,by=0.1)
+cl=clusterMany(simData,k=2:20,clusterFunction="kmeans")@clusterMatrix
+nclust1=st1=idx1=rep(NA,length(prop))
+for(i in 1:length(prop))
+{
+  #MC1: makeConsensus classico con proportion da 0 a 1
+  mc1=makeConsensus(cl,proportion=prop[i])
+  nclust1[i]=length(table(mc1$clustering))
+  st1[i]=system.time(makeConsensus(cl,proportion=0.7))[[3]]
+  idx1[i]=adjustedRandIndex(trueCluster,mc1$clustering)
+}
+nclust1
+st1
+idx1
+
+kclust=c(1,3,5,8,10,15,20,50,100,250,500)
+nclust2=st2=idx2=rep(NA,length(kclust))
+for(i in 1:length(kclust))
+{
+  #MC2: makeConsensus nuovo kclust diversi algoritmo walktrap
+  mc2=makeConsensus2(cl, k=kclust[i], algorithm="cluster_walktrap")
+  nclust2[i]=length(table(mc2$clustering))
+  st2[i]=system.time(makeConsensus2(cl, k=kclust[i], algorithm="cluster_walktrap"))[[3]]
+  idx2[i]=adjustedRandIndex(trueCluster,mc2$clustering)
+}
+nclust2
+idx2
+st2
+
+nclust3=st3=idx3=rep(NA,length(kclust))
+for(i in 1:length(kclust))
+{
+  #MC3: makeConsensus nuovo kclust diversi algoritmo walktrap
+  mc3=makeConsensus2(cl, k=kclust[i], algorithm="cluster_louvain")
+  nclust3[i]=length(table(mc3$clustering))
+  st3[i]=system.time(makeConsensus2(cl, k=kclust[i], algorithm="cluster_louvain"))[[3]]
+  idx3[i]=adjustedRandIndex(trueCluster,mc3$clustering)
+}
+nclust3
+st3
+idx3
+
+nclust4=st4=idx4=rep(NA,length(kclust))
+for(i in 1:length(kclust))
+{
+  mc4=makeConsensus2(cl, k=kclust[i], algorithm="components_weak")
+  nclust4[i]=length(table(mc4$clustering))
+  st4[i]=system.time(makeConsensus2(cl, k=kclust[i], algorithm="components_weak"))[[3]]
+  idx4[i]=adjustedRandIndex(trueCluster,mc4$clustering)
+}
+nclust4
+st4
+idx4
+
+nclust5=st5=idx5=rep(NA,length(kclust))
+for(i in 1:length(kclust))
+{
+  mc5=makeConsensus2(cl, k=kclust[i], algorithm="components_strong")
+  nclust5[i]=length(table(mc5$clustering))
+  st5[i]=system.time(makeConsensus2(cl, k=kclust[i], algorithm="components_strong"))[[3]]
+  idx5[i]=adjustedRandIndex(trueCluster,mc5$clustering)
+}
+nclust5
+st5
+idx5
+
+
+par(mfrow=c(1,3))
+plot(nclust1,type="l")
+plot(st1,type="l")
+plot(idx1,type="l")
+
+plot(nclust2,type="l")
+plot(st2,type="l")
+plot(idx2,type="l")
+
+plot(nclust3,type="l")
+plot(st3,type="l")
+plot(idx3,type="l")
+
+par(mfrow=c(1,2))
+plot(nclust4,type="l")
+plot(st4,type="l")
+plot(idx4,type="l")
+
+plot(nclust4,type="l")
+plot(st4,type="l")
+plot(idx4,type="l")
+
+#confronto 
+par(mfrow=c(1,3))
+plot(nclust1,col=1,type="l",xlab="proprtion",xaxt="n",main="makeConsensus")
+axis(1, at=1:length(kclust), labels=prop)
+plot(nclust2,col=2,type="l",xlab="k",xaxt="n",main="makeConsensus2")
+axis(1, at=1:length(kclust), labels=kclust)
+points(nclust3,col=3,type="l")
+legend("topright",legend=c("walktrap","louvain"),col=c("red","green"),lty=1,cex=0.8)
+plot(nclust4,col=4,type="l",xlab="k",xaxt="n",main="makeConsensus2 - components")
+axis(1, at=1:length(kclust), labels=kclust)
+points(nclust5,col=6,type="l")
+legend("topright",legend=c("weak","strong"),col=c("blue","violet"),lty=1,cex=0.8)
+
+par(mfrow=c(1,3))
+plot(idx1,col=1,type="l",xlab="proprtion",xaxt="n",main="makeConsensus")
+axis(1, at=1:length(kclust), labels=prop)
+plot(idx2,col=2,type="l",xlab="k",xaxt="n",main="makeConsensus2")
+axis(1, at=1:length(kclust), labels=kclust)
+points(idx3,col=3,type="l")
+legend("topleft",legend=c("walktrap","louvain"),col=c("red","green"),lty=1,cex=0.8)
+plot(idx4,col=4,type="l",xlab="k",xaxt="n",main="makeConsensus2")
+axis(1, at=1:length(kclust), labels=kclust)
+points(idx5,col=6,type="l")
+legend("topleft",legend=c("weak","strong"),col=c("blue","violet"),lty=1,cex=0.8)
+
+par(mfrow=c(1,3))
+plot(st1,col=1,type="l",xlab="proprtion",xaxt="n",main="makeConsensus")
+axis(1, at=1:length(kclust), labels=prop)
+plot(st2,col=2,type="l",xlab="k",xaxt="n",main="makeConsensus2")
+axis(1, at=1:length(kclust), labels=kclust)
+points(st3,col=3,type="l")
+legend("topleft",legend=c("walktrap","louvain"),col=c("red","green"),lty=1,cex=0.8)
+plot(st4,col=4,type="l",xlab="k",xaxt="n",main="makeConsensus2")
+axis(1, at=1:length(kclust), labels=kclust)
+points(st5,col=6,type="l")
+legend("topleft",legend=c("weak","strong"),col=c("blue","violet"),lty=1,cex=0.8)
+
+#Confronto migliori prestazioni
+#guardo system time quando l'indice è 1
+st1[which(idx1==1)]
+st2[which(idx2==1)]
+st3[which(idx3==1)]
+st4[which(idx4==1)]
+st5[which(idx5==1)]
+kclust[10]
