@@ -20,6 +20,7 @@ load_all()
 library(scran)
 setwd("C:/Users/user1/Desktop/UNIVERSITA'/TESI/ProveTesi")
 library(mclust)
+library(igraph)
 
 #Per usare adjuster rand index devo dire ogni oss a che cluster appartiene
 
@@ -36,7 +37,7 @@ for(i in 1:length(prop))
   #MC1: makeConsensus classico con proportion da 0 a 1
   mc1=makeConsensus(cl,proportion=prop[i])
   nclust1[i]=length(table(mc1$clustering))
-  st1[i]=system.time(makeConsensus(cl,proportion=0.7))[[3]]
+  st1[i]=system.time(makeConsensus(cl,proportion=prop[i]))[[3]]
   idx1[i]=adjustedRandIndex(trueCluster,mc1$clustering)
 }
 nclust1
