@@ -54,12 +54,12 @@ dim(simData)
 save(simData,file="simData_3_casuali.RData")
 save(trueCluster,file="trueCluster_3_casuali.RData")
 
-medie=runif(10,-15.5,15.5)
+medie=runif(10,-150.5,150.5)
 prop=c(runif(10,0,1))
 prop=prop/sum(prop)
 prop
 
-simulazioni=simulate_gauss_mix(n_cells=3000, n_genes=150,
+simulazioni=simulate_gauss_mix(n_cells=5000, n_genes=150,
                                k=10, x_mus = medie, 
                                x_sds = c(runif(10,0.1,2)), 
                                y_mus = c(5,5,0,5,5,0,5,5,0,5), 
@@ -70,5 +70,5 @@ trueCluster=simulazioni$true_cluster_id
 table(trueCluster)
 simData=as.matrix(t(simulazioni$obs_data))
 dim(simData)
-save(simData,file="simData_10_casuali.RData")
-save(trueCluster,file="trueCluster_10_casuali.RData")
+save(simData,file="simData_10_casuali_sparsi.RData")
+save(trueCluster,file="trueCluster_10_casuali_sparsi.RData")

@@ -15,7 +15,7 @@ load("simData_3_casuali.RData")
 load("trueCluster_3_casuali.RData")
 
 ####Analisi####
-prop=seq(0.1,1,by=0.1)
+prop=seq(0,0.9,by=0.1)
 cl=clusterMany(simData,k=2:20,clusterFunction="kmeans")@clusterMatrix
 adj_CM=apply(cl,2,function(x) adjustedRandIndex(trueCluster,x))
 
