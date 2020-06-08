@@ -1,4 +1,4 @@
-sim=analisi(ngruppi=10,range=c(-5.5,5.5))
+sim=analisi(ngruppi=10,range=c(-155.5,155.5))
 nclust_mc=sim[[1]][,1]
 nclust_wa=sim[[2]][,1]
 nclust_lo=sim[[3]][,1]
