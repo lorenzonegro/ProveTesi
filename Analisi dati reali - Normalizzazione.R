@@ -12,48 +12,54 @@ library(igraph)
 library(scRNAseq)
 library(scater)
 
-load("Dati Filtrati.RData")
-lib.sf.filtered <- librarySizeFactors(filtered)
-summary(lib.sf.filtered)
+dati=BaronPancreasData('human')
+lib.sf.dati <- librarySizeFactors(dati)
+summary(lib.sf.dati)
 
-hist(log10(lib.sf.filtered), xlab="Log10[Size factor]", col='grey80')
+hist(log10(lib.sf.dati), xlab="Log10[Size factor]", col='grey80')
 
 set.seed(100)
-clust.filtered <- quickCluster(filtered) 
-table(clust.filtered)
+clust.dati <- quickCluster(dati) 
+table(clust.dati)
 
-deconv.sf.filtered <- calculateSumFactors(filtered, cluster=clust.filtered)
-summary(deconv.sf.filtered)
+deconv.sf.dati <- calculateSumFactors(dati, cluster=clust.dati)
+summary(deconv.sf.dati)
 
-plot(lib.sf.filtered, deconv.sf.filtered, xlab="Library size factor",
+plot(lib.sf.dati, deconv.sf.dati, xlab="Library size factor",
      ylab="Deconvolution size factor", log='xy', pch=16,
-     col=as.integer(factor(filtered$label)))
+     col=as.integer(factor(dati$label)))
 abline(a=0, b=1, col="red")
 
-#??? non ho spike ins
-#library(scRNAseq)
-#filtered <- filtered[,filtered$`single cell quality`=="OK"]
-#filtered
-
-#filtered <- computeSpikeFactors(filtered, "ERCC")
-#summary(sizeFactors(sce.richard))
-#to.plot <- data.frame(
-#  DeconvFactor=calculateSumFactors(filtered),
-#  SpikeFactor=sizeFactors(filtered),
-#  Stimulus=filtered$stimulus, 
-#  Time=filtered$time
-#)
-
-#ggplot(to.plot, aes(x=DeconvFactor, y=SpikeFactor, color=Time)) +
-#  geom_point() + facet_wrap(~Stimulus) + scale_x_log10() + 
-#  scale_y_log10() + geom_abline(intercept=0, slope=1, color="red")
-
+#non ho spike ins
 
 #Applico fattori di normalizzazione
 set.seed(100)
-clust.filtered <- quickCluster(filtered) 
-filtered <- computeSumFactors(filtered, cluster=clust.filtered, min.mean=0.1)
-filtered <- logNormCounts(filtered)
-assayNames(filtered)
+clust.dati <- quickCluster(dati) 
+dati <- computeSumFactors(dati, cluster=clust.dati, min.mean=0.1)
+dati <- logNormCounts(dati)
+assayNames(dati)
 
-save(filtered,file="Dati Filtrati.RData")
+save(dati,file="Dati Normalizzati.RData")
+
+library(scran)
+dec.dati <- modelGeneVar(dati)
+
+# Visualizing the fit:
+fit.dati <- metadata(dec.dati)
+plot(fit.dati$mean, fit.dati$var, xlab="Mean of log-expression",
+     ylab="Variance of log-expression")
+curve(fit.dati$trend(x), col="dodgerblue", add=TRUE, lwd=2)
+
+dec.dati[order(dec.dati$bio, decreasing=TRUE),] 
+
+hvg.dati.var <- getTopHVGs(dec.dati, n=1000)
+str(hvg.dati.var)
+hvg.dati.var.2 <- getTopHVGs(dec.dati, fdr.threshold=0.05)
+length(hvg.dati.var.2)
+
+#scelgo secondo metodo
+chosen <- hvg.dati.var.2
+sce.dati.hvg <- dati[chosen,]
+dim(sce.dati.hvg)
+
+save(sce.dati.hvg,file="Dati con geni più significativi")
