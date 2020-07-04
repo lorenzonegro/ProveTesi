@@ -62,4 +62,6 @@ chosen <- hvg.dati.var.2
 sce.dati.hvg <- dati[chosen,]
 dim(sce.dati.hvg)
 
-save(sce.dati.hvg,file="Dati con geni più significativi")
+save(sce.dati.hvg,file="Dati con geni più significativi.RData")
+
+
