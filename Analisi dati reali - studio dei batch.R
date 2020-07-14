@@ -27,6 +27,19 @@ plotTSNE(uncorrected, colour_by="donor")
 
 set.seed(1000101001)
 library(batchelor)
-mnn.out <- fastMNN(sce.dati$donor, d=50, k=20,
-                   BSPARAM=BiocSingular::RandomParam(deferred=TRUE))
+mnn.out <- fastMNN(sce.dati, batch=sce.dati$donor, d=26, k=20, BSPARAM=BiocSingular::RandomParam(deferred=TRUE))
 mnn.out
+dim(reducedDim(mnn.out, "corrected"))
+
+snn.gr <- buildSNNGraph(mnn.out, use.dimred="corrected")
+clusters.mnn <- igraph::cluster_walktrap(snn.gr)$membership
+tab.mnn <- table(Cluster=clusters.mnn, Batch=mnn.out$batch)
+tab.mnn
+
+set.seed(0010101010)
+mnn.out <- runTSNE(mnn.out, dimred="corrected")
+
+mnn.out$batch <- factor(mnn.out$batch)
+plotTSNE(mnn.out, colour_by="batch")
+
+save(mnn.out,file="Dataset finale.RData")
