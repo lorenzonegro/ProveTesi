@@ -12,7 +12,8 @@ library(igraph)
 library(scRNAseq)
 library(scater)
 
-load("Dati con PCA.RData")
+load("Dati con geni più significativi.RData")
+sce.dati <- sce.dati.hvg
 
 # Using RandomParam() as it is more efficient for file-backed matrices.
 set.seed(0010101010)
@@ -27,7 +28,7 @@ plotTSNE(uncorrected, colour_by="donor")
 
 set.seed(1000101001)
 library(batchelor)
-mnn.out <- fastMNN(sce.dati, batch=sce.dati$donor, d=26, k=20, BSPARAM=BiocSingular::RandomParam(deferred=TRUE))
+mnn.out <- fastMNN(sce.dati, batch=sce.dati$donor, d=48, k=10, BSPARAM=BiocSingular::RandomParam(deferred=TRUE))
 mnn.out
 dim(reducedDim(mnn.out, "corrected"))
 

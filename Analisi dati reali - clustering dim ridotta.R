@@ -13,20 +13,20 @@ library(scRNAseq)
 library(scater)
 
 load("Dataset finale.RData")
-load("Dati con PCA.RData")
+sce.dati <- mnn.out
 
-trueCluster=sce.dati$label
+trueCluster=BaronPancreasData('human')$label
 data=t(reducedDim(mnn.out))
-cl=clusterMany(data,k=2:20,clusterFunction="kmeans")@clusterMatrix
+cl=clusterMany(data,k=10:20,clusterFunction="kmeans")@clusterMatrix
 
 prop=seq(0,0.9,by=0.1)
 adj_CM=apply(cl,2,function(x) adjustedRandIndex(trueCluster,x))
 
-nclust1=st1=idx1=sil1=rep(NA,length(prop))
-nclust2=st2=idx2=sil2=rep(NA,length(prop))
-nclust3=st3=idx3=sil3=rep(NA,length(prop))
-nclust4=st4=idx4=sil4=rep(NA,length(prop))
-nclust5=st5=idx5=sil5=rep(NA,length(prop))
+nclust1=st1=idx1=rep(NA,length(prop))
+nclust2=st2=idx2=rep(NA,length(prop))
+nclust3=st3=idx3=rep(NA,length(prop))
+nclust4=st4=idx4=rep(NA,length(prop))
+nclust5=st5=idx5=rep(NA,length(prop))
 
 for(i in 1:length(prop))
 {
@@ -149,8 +149,8 @@ legend("topright",legend=c("weak","strong"),col=c("blue","violet"),lty=1,cex=0.8
 #Confronto migliori prestazioni
 #guardo system time quando l'indice è 1
 c(max(idx1),prop[which.max(idx1)],st1[which.max(idx1)]) #mc1
-c(max(idx2),prop[which.max(idx2)],st1[which.max(idx2)]) #mc3 walktrap
-c(max(idx3),prop[which.max(idx3)],st1[which.max(idx3)]) #mc3 louvain
-c(max(idx4),prop[which.max(idx4)],st1[which.max(idx4)]) #mc3 c weak
-c(max(idx5),prop[which.max(idx5)],st1[which.max(idx5)]) #mc3 c strong
+c(max(idx2),prop[which.max(idx2)],st2[which.max(idx2)]) #mc3 walktrap
+c(max(idx3),prop[which.max(idx3)],st3[which.max(idx3)]) #mc3 louvain
+c(max(idx4),prop[which.max(idx4)],st4[which.max(idx4)]) #mc3 c weak
+c(max(idx5),prop[which.max(idx5)],st5[which.max(idx5)]) #mc3 c strong
 

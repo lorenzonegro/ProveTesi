@@ -29,10 +29,9 @@ chosen.elbow
 plot(percent.var, xlab="PC", ylab="Variance explained (%)")
 abline(v=chosen.elbow, col="red")
 
-reducedDim(sce.dati, "PCA") <- reducedDim(sce.dati, "PCA")[,1:26]
+reducedDim(sce.dati, "PCA") <- reducedDim(sce.dati, "PCA")[,1:48]
 ncol(reducedDim(sce.dati, "PCA"))
 
 dim(sce.dati)
 dim(reducedDim(sce.dati,"PCA"))
 
-save(sce.dati,file="Dati con PCA.RData")
