@@ -44,7 +44,7 @@ simulate_gauss_mix <- function(n_cells, n_genes,
 }
 
 ngruppi=10
-range=c(-5.5,5.5)
+range=c(-150.5,150.5)
 medie_x=runif(ngruppi,range[1],range[2])
 medie_y=rev(medie_x)
 prop_gruppi=c(runif(ngruppi,0,1))
@@ -63,12 +63,12 @@ trueCluster=simulazioni$true_cluster_id
 simData=as.matrix(t(simulazioni$obs_data))
 
 ce=clusterSingle(simData, subsample = TRUE, sequential = FALSE,
-              mainClusterArgs = list(clusterFunction = "hierarchical01",
-                                     clusterArgs = list(alpha = 0.3)),
-              subsampleArgs = list(clusterFunction = "kmeans",
-                                   clusterArgs = list(k = 5),
-                                   samp.p = 0.7,
-                                   resamp.num = 100))
+                 mainClusterArgs = list(clusterFunction = "hierarchical01",
+                                        clusterArgs = list(alpha = 0.3)),
+                 subsampleArgs = list(clusterFunction = "kmeans",
+                                      clusterArgs = list(k = 5),
+                                      samp.p = 0.7,
+                                      resamp.num = 100))
 
 table(ce@clusterMatrix)
 
@@ -104,12 +104,12 @@ analisi <- function(ngruppi,range,n_cells=3000,n_genes=150)
   {
     #MC1: makeConsensus classico con proportion da 0 a 1
     st1[i] <- system.time(ce <- clusterSingle(simData, subsample = TRUE, sequential = FALSE,
-                                           mainClusterArgs = list(clusterFunction = "hierarchical01",
-                                                                  clusterArgs = list(alpha = prop[i])),
-                                           subsampleArgs = list(clusterFunction = "kmeans",
-                                                                clusterArgs = list(k = 5),
-                                                                samp.p = 0.7,
-                                                                resamp.num = 100)))[[3]]
+                                              mainClusterArgs = list(clusterFunction = "hierarchical01",
+                                                                     clusterArgs = list(alpha = prop[i])),
+                                              subsampleArgs = list(clusterFunction = "kmeans",
+                                                                   clusterArgs = list(k = 5),
+                                                                   samp.p = 0.7,
+                                                                   resamp.num = 100)))[[3]]
     nclust1[i]=length(table(ce@clusterMatrix))
     idx1[i]=adjustedRandIndex(trueCluster,ce@clusterMatrix)
     
@@ -169,7 +169,7 @@ analisi <- function(ngruppi,range,n_cells=3000,n_genes=150)
 }
 
 ngruppi=10
-range=c(-5.5,5.5)
+range=c(-150.5,150.5)
 
 sim=analisi(ngruppi,range)
 prop=seq(0,0.9,by=0.1)
@@ -199,7 +199,7 @@ set.seed(123) #simulazioni 2-50
 for(i in 1:R)
 {
   cat(i)
-  sim=analisi(ngruppi=10,range=c(-5.5,5.5))
+  sim=analisi(ngruppi=10,range=c(-150.5,150.5))
   nclust_mc=cbind(nclust_mc,sim[[1]][,1])
   nclust_wa=cbind(nclust_wa,sim[[2]][,1])
   nclust_lo=cbind(nclust_lo,sim[[3]][,1])
@@ -236,16 +236,16 @@ output=list("Numero di cluster mC"=nclust_mc,
             "Indice comp_strong"=idx_cs)
 
 
-save(output,file="Statistiche subsampling gerarchico 10 vicini.RData")
+save(output,file="Statistiche subsampling gerarchico 10 sparsi.RData")
 
 rm(list=ls())
 
-load("Statistiche subsampling gerarchico 10 vicini.RData")
+load("Statistiche subsampling gerarchico 10 sparsi.RData")
 
 nclust_mc=round(rowMeans(output$`Numero di cluster mC`))
 nclust_wa=round(rowMeans(output$`Numero di cluster walktrap`))
 nclust_lo=round(rowMeans(output$`Numero di cluster Louvain`))
-nclust_cw=round(rowMeans(output$`Numero di cluster walktrap`))
+nclust_cw=round(rowMeans(output$`Numero di cluster comp_weak`))
 nclust_cs=round(rowMeans(output$`Numero di cluster comp_strong`))
 
 prop=seq(0,0.9,by=0.1)
@@ -295,11 +295,11 @@ axis(1, at=1:length(prop), labels=prop)
 plot(st_wa,col=2,type="l",xlab="proportion",xaxt="n",main="Walktrap & Louvain",ylab="System time")
 axis(1, at=1:length(prop), labels=prop)
 points(st_lo,col=3,type="l")
-legend("topright",legend=c("walktrap","louvain"),col=c("red","green"),lty=1,cex=0.8)
+legend("topright",legend=c("walktrap","louvain"),col=c("red","green"),lty=1,cex=0.5)
 plot(st_cw,col=4,type="l",xlab="proportion",xaxt="n",main="Components",ylab="System time")
 axis(1, at=1:length(prop), labels=prop)
 points(st_cs,col=6,type="l")
-legend("topright",legend=c("weak","strong"),col=c("blue","violet"),lty=1,cex=0.8)
+legend("topright",legend=c("weak","strong"),col=c("blue","violet"),lty=1,cex=0.5)
 
 #Confronto best performance
 best_mc=mean(apply(output$`Indice mc`,2,function(x) max(x)))
@@ -369,3 +369,4 @@ table(prop[idx_best_wa])
 table(prop[idx_best_lo])
 table(prop[idx_best_cw])
 table(prop[idx_best_cs])
+
